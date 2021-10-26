@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import pandas as pd
 from Rotate_function import rotate, rotate_box_dot
+import yaml
 
 def read_text(text_url):
     # df변수에 데이터프레임으로 text파일을 가져온다
@@ -72,4 +73,7 @@ def frame_extraction (text_url,video_url):
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    frame_extraction("mounting_001\mounting_001_det.txt","mounting_001\mounting_001.mp4")
+    with open('config.yaml') as file:
+        config = yaml.load(file, Loader=yaml.FullLoader)
+    # print(config['det_path'], config['mp4_path'])
+    frame_extraction(config['det_path'],config['mp4_path'])
