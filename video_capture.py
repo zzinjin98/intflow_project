@@ -9,7 +9,6 @@ def read_text(text_url):
     df.columns = ['frame','xc','yc','width','height','theta','no_x','no_y','ne_x','ne_y','ta_x','ta_y']
     df = df.drop(index=0, axis=0)
 
-
     rotate_list = []
 
     # 각 줄에 접근하여 roatate_function 좌표 계산에 필요한 데이터를 지정해준다
