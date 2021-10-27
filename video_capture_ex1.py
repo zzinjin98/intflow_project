@@ -4,67 +4,40 @@ import pandas as pd
 from Rotate_function import rotate, rotate_box_dot
 import yaml
 
-def read_text(text_url):
-    # df변수에 데이터프레임으로 text파일을 가져온다
-    df = pd.read_csv(text_url, sep=",", header=None)
-    df.columns = ['frame','xc','yc','width','height','theta','no_x','no_y','ne_x','ne_y','ta_x','ta_y']
-    df = df.drop(index=0, axis=0)
+def frame_extraction (text_path, video_path):
+    cap = cv2.VideoCapture(video_path)
 
-
-    rotate_list = []
-
-    # 각 줄에 접근하여 roatate_function 좌표 계산에 필요한 데이터를 지정해준다
-    
-    for i in range(len(df)):
-        data = list(df.loc[i+1,:])
-        result = rotate_box_dot(int(data[0]), float(data[1]), float(data[2]), float(data[3]), float(data[4]), float(data[5]))
-        rotate_list.append(result)
-
-    #  출력 내용과 frame을 새로운 데이터 프레임에 저장한다
-    df_rotate = pd.DataFrame(rotate_list, columns=['frame','rotated_x1','rotated_y1', 'rotated_x2','rotated_y2', 'rotated_x3','rotated_y3', 'rotated_x4','rotated_y4'])
-
-    return df_rotate
-
-
-
-def frame_extraction (text_url,video_url):
-
-    df_rotate = read_text(text_url)
-
-    cap = cv2.VideoCapture(video_url)
+    df = pd.read_csv(text_path, sep=",", header=None)
     frame = 0
+    
     if cap.isOpened():
         while True:
             # 프레임을 잘 읽어오면 ret는 True, img 는 프레임 이미지로 저장된다
             ret, img = cap.read()
             
             if ret:
-                
-                # 현재 프레임을 가진 좌표 데이터를 가져온다
-                df_0 = df_rotate[df_rotate['frame']==frame]
-                df_array_0 = []
+                df_frame = df.loc[df[0]==str(frame),1:].values.tolist()
 
-                # 가져온 데이터의 인덱스를 0부터로 초기화한다
-                df_0.index = [i for i in range(len(df_0))]
+                red_color = (0,0,255)
+                green_color = (0,255,0)
+                blue_color = (255,0,0)
+                purple_color = (255,0,255)
 
-                # 좌표 데이터를 가져와 4행 2열 형태로 바꾼 뒤 df_array_0에 넣는다
-                for i in range(len(df_0)):
-                    df_array_0.append(np.reshape(list(df_0.loc[i,:])[1:], (4,2)))
-
-                # df_array_0 리스트 안 points의 각 네 점으로 현재 프레임이미지에 다각형을 그린다
-                color = 255
-                for points in df_array_0 :
+                for i in df_frame:
                     
-                    img = cv2.polylines(img,[points],True,(color,color,color),thickness=3)
+                    points = rotate_box_dot(float(i[0]), float(i[1]), float(i[2]), float(i[3]), float(i[4]))
+                    img = cv2.polylines(img,[points],True,red_color,thickness=3)
+                    img = cv2.circle(img,(int(float(i[5])),int(float(i[6]))), 5,green_color, thickness=3)
+                    img = cv2.circle(img,(int(float(i[7])),int(float(i[8]))), 5,blue_color, thickness=3)
+                    img = cv2.circle(img,(int(float(i[9])),int(float(i[10]))), 5,purple_color, thickness=3)
 
 
-                cv2.imshow(video_url, img)
-                cv2.waitKey(25)
+                cv2.imshow(video_path, img)
+                cv2.waitKey(50)
 
                 frame+=1
             else:
                 break
-
 
     else:
         print("can't open video")
@@ -75,5 +48,4 @@ def frame_extraction (text_url,video_url):
 if __name__ == "__main__":
     with open('config.yaml') as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
-    # print(config['det_path'], config['mp4_path'])
     frame_extraction(config['det_path'],config['mp4_path'])
