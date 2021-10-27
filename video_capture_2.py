@@ -15,12 +15,13 @@ def frame_extraction (text_url, video_url):
             ret, img = cap.read()
             
             if ret:
-                df_frame = df.loc[df[0]==str(frame),1:].values.tolist()
+                df_frame = df.loc[df[0]==frame,1:].values.tolist()
 
                 color = 255
                 for i in df_frame:
-                    points = rotate_box_dot(float(i[0]), float(i[1]), float(i[2]), float(i[3]), float(i[4]))
+                    points = rotate_box_dot(i[0], i[1], i[2], i[3], i[4])
                     img = cv2.polylines(img,[points],True,(color,color,color),thickness=3)
+                    img = cv2.putText(img, str(int(i[11])), (int(i[0]), int(i[1])), cv2.FONT_HERSHEY_PLAIN, 2, (color,color,color), thickness=2)
 
                 cv2.imshow(video_url, img)
                 cv2.waitKey(25)
@@ -36,5 +37,4 @@ def frame_extraction (text_url, video_url):
     cv2.destroyAllWindows()
 
 if __name__ == "__main__":
-    frame_extraction("..\mounting_000\mounting_000_det.txt", "..\mounting_000\mounting_000.mp4")
-
+    frame_extraction("..\mounting_000\mounting_000_trk.txt", "..\mounting_000\mounting_000.mp4")
