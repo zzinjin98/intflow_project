@@ -25,10 +25,19 @@ def frame_extraction (text_path, video_path):
 
                 for i in df_frame:
                     
+                    
                     points = rotate_box_dot(float(i[0]), float(i[1]), float(i[2]), float(i[3]), float(i[4]))
+                    
+                    # 전체
                     img = cv2.polylines(img,[points],True,red_color,thickness=3)
+
+                    # 코 
                     img = cv2.circle(img,(int(float(i[5])),int(float(i[6]))), 5,green_color, thickness=3)
+
+                    # 목
                     img = cv2.circle(img,(int(float(i[7])),int(float(i[8]))), 5,blue_color, thickness=3)
+
+                    # 꼬리
                     img = cv2.circle(img,(int(float(i[9])),int(float(i[10]))), 5,purple_color, thickness=3)
 
 
