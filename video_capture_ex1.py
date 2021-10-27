@@ -4,6 +4,7 @@ import pandas as pd
 from Rotate_function import rotate, rotate_box_dot
 import yaml
 
+PI = 3.14
 def frame_extraction (text_path, video_path):
     cap = cv2.VideoCapture(video_path)
 
@@ -16,7 +17,7 @@ def frame_extraction (text_path, video_path):
             ret, img = cap.read()
             
             if ret:
-                df_frame = df.loc[df[0]==str(frame),1:].values.tolist()
+                df_frame = df.loc[df[0]==frame,1:].values.tolist()
 
                 red_color = (0,0,255)
                 green_color = (0,255,0)
@@ -27,9 +28,10 @@ def frame_extraction (text_path, video_path):
                     
                     
                     points = rotate_box_dot(float(i[0]), float(i[1]), float(i[2]), float(i[3]), float(i[4]))
-                    
+
                     # 전체
-                    img = cv2.polylines(img,[points],True,red_color,thickness=3)
+                    # img = cv2.polylines(img,[points],True,red_color,thickness=3)
+                    img = cv2.ellipse(img,((int(i[0]),int(i[1])),(int(i[2]),int(i[3])),float(i[4])*360/PI),red_color,thickness=3)
 
                     # 코 
                     img = cv2.circle(img,(int(float(i[5])),int(float(i[6]))), 5,green_color, thickness=3)
@@ -42,7 +44,7 @@ def frame_extraction (text_path, video_path):
 
 
                 cv2.imshow(video_path, img)
-                cv2.waitKey(50)
+                cv2.waitKey(25)
 
                 frame+=1
             else:
