@@ -5,8 +5,7 @@ from Rotate_function import rotate, rotate_box_dot
 import yaml
 import random
 import math
-
-PI = 3.14
+import os
 
 
 def video_out(video_path,video_name):
@@ -25,9 +24,13 @@ def video_out(video_path,video_name):
 
 
 
-def frame_extraction (text_path, video_path):
+def frame_extraction (config, PI = 3.14):
+    text_path, video_path = config['det_path'], config['mp4_path']
 
-    out = video_out(video_path,"test.mp4")
+    print(os.path.basename(video_path))
+    # out = video_out(video_path,"test.mp4")
+    # os.path.join()
+    out = video_out(video_path,os.path.splitext(os.path.basename(video_path))[0]+'.mp4')
 
     cap = cv2.VideoCapture(video_path)
 
@@ -39,6 +42,7 @@ def frame_extraction (text_path, video_path):
 
     # 최대 개체 수만큼 랜덤으로 컬러를 만듦
     color_list = [(0,random.randrange(0,256),random.randrange(0,256)) for _ in range(object_cnt)]
+    # color_list = [(0,int(idx*random.randrange(0,1)),random.randrange(0,256)) for idx in range(object_cnt)]
 
     color_nose = (255,255,255)
     color_neck = (255,0,0)
@@ -89,7 +93,7 @@ def frame_extraction (text_path, video_path):
                 cv2.imshow(video_path, img)
 
                 
-                cv2.waitKey(5)
+                cv2.waitKey(2)
 
                 frame+=1
             else:
@@ -105,4 +109,5 @@ def frame_extraction (text_path, video_path):
 if __name__ == "__main__":
     with open('config.yaml') as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
-    frame_extraction(config['det_path'],config['mp4_path'])
+    # frame_extraction(config['det_path'],config['mp4_path'])
+    frame_extraction(config)
