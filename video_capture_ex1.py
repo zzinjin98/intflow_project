@@ -25,11 +25,9 @@ def video_out(video_path,video_name):
 
 
 def frame_extraction (config, PI = 3.14):
-    text_path, video_path = config['det_path'], config['mp4_path']
+    text_path, video_path = config['trk_path'], config['mp4_path']
 
     print(os.path.basename(video_path))
-    # out = video_out(video_path,"test.mp4")
-    # os.path.join()
     out = video_out(video_path,os.path.splitext(os.path.basename(video_path))[0]+'.mp4')
 
     cap = cv2.VideoCapture(video_path)
@@ -106,8 +104,12 @@ def frame_extraction (config, PI = 3.14):
     cap.release()
     cv2.destroyAllWindows()
 
+
+
+
+
+
 if __name__ == "__main__":
     with open('config.yaml') as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
-    # frame_extraction(config['det_path'],config['mp4_path'])
     frame_extraction(config)

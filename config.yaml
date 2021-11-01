@@ -1,2 +1,5 @@
-det_path: "mounting_001/mounting_001_trk.txt"
+det_path: "mounting_001/mounting_001_det.txt"
 mp4_path: "mounting_001/mounting_001.mp4"
+trk_path: "mounting_001/mounting_001_trk.txt"
+drink_section : [1500,0,1640,200]
+eat_section : [0,800,1640,920]
