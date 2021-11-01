@@ -52,6 +52,8 @@ def cnt_drink_eat(config):
                         object_dict[int(i[11])][1] += 1
 
 
+                    img = cv2.putText(img, str(int(i[11])), (int(i[0]),int(i[1])), cv2.FONT_HERSHEY_PLAIN, 2, (255,255,255), thickness=2)  
+
                 cv2.imshow(video_path, img)
                 cv2.waitKey(50)
 
