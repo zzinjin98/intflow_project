@@ -19,7 +19,7 @@ def video_out(video_path,video_name):
 
     out = cv2.VideoWriter(video_name, fourcc, fps, (int(width), int(height))) # VideoWriter 객체 정의
 
-    print(fps)
+    
     return out
 
 
@@ -27,7 +27,6 @@ def video_out(video_path,video_name):
 def frame_extraction (config, PI = 3.14):
     text_path, video_path = config['trk_path'], config['mp4_path']
 
-    print(os.path.basename(video_path))
     out = video_out(video_path,os.path.splitext(os.path.basename(video_path))[0]+'.mp4')
 
     cap = cv2.VideoCapture(video_path)
@@ -39,8 +38,7 @@ def frame_extraction (config, PI = 3.14):
     object_cnt = max(df[12]) + 1
 
     # 최대 개체 수만큼 랜덤으로 컬러를 만듦
-    color_list = [(0,random.randrange(0,256),random.randrange(0,256)) for _ in range(object_cnt)]
-    # color_list = [(0,int(idx*random.randrange(0,1)),random.randrange(0,256)) for idx in range(object_cnt)]
+    color_list = [(int(random.random()*i*256) % 25,int(random.random()*i*256) % 256,int(random.random()*i*256) % 256) for i in range(1,object_cnt+1)]
 
     color_nose = (255,255,255)
     color_neck = (255,0,0)
