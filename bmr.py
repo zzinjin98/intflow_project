@@ -120,13 +120,14 @@ def cow_bmr (config):
     for i in range(object_cnt):
         Q1 = pd_width_res[i].quantile(q = 0.25, interpolation='nearest')
         Q3 = pd_height_res[i].quantile(q = 0.75, interpolation='nearest')
-        width_Q1.append(Q1)
-        height_Q3.append(Q3)
-    print(width_Q1, height_Q3)
+        width_Q1.append(float(Q1)*0.005)
+        height_Q3.append(float(Q3)*0.005)
+    #print(width_Q1, height_Q3)
 
     for i in range(object_cnt):
-        cow_surface = 3.14 * int(width_Q1[i]) * ((int(width_Q1[i]) /2) + (int(height_Q3[i])))
-        print(cow_surface)
+        cow_surface = 3.14 * float(width_Q1[i]) * ((float(width_Q1[i]) /2) + (float(height_Q3[i])))
+        cow_bmr = float(cow_surface) * 1100
+        print(f'{i}번 소의 기초 대사량 : {cow_bmr}kcal')
 
     
         

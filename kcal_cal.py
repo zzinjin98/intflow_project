@@ -7,30 +7,13 @@ import random
 import math
 import os
 
-PI = 3.14
-
-
-def video_out(video_path,video_name):
-
-    cap = cv2.VideoCapture(video_path) # VideoCapture 객체 정의
-    fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v') # 코덱 정의
-
-    width = cap.get(cv2.CAP_PROP_FRAME_WIDTH) # 또는 cap.get(3)
-    height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT) # 또는 cap.get(4)
-    fps = cap.get(cv2.CAP_PROP_FPS) # 또는 cap.get(5)
-
-    out = cv2.VideoWriter(video_name, fourcc, fps, (int(width), int(height))) # VideoWriter 객체 정의
-
-
-    return out
 
 
 
-def frame_extraction (config, PI = 3.14):
+def cow_bmr (config):
     text_path, video_path = config['trk_path'], config['mp4_path']
 
-    out = video_out(video_path,os.path.splitext(os.path.basename(video_path))[0]+'.mp4')
-
+   
     cap = cv2.VideoCapture(video_path)
 
     df = pd.read_csv(text_path, sep=",", header=None)
@@ -61,11 +44,11 @@ def frame_extraction (config, PI = 3.14):
                     
                     
                     # 몸통 다각형
-                    # points = rotate_box_dot(i[0], i[1], i[2], i[3], i[4])
-                    # img = cv2.polylines(img,[points],True,color_list[int(i[11])],thickness=3)
+                    points = rotate_box_dot(i[0], i[1], i[2], i[3], i[4])
+                    img = cv2.polylines(img,[points],True,color_list[int(i[11])],thickness=3)
 
                     # 몸통 타원 
-                    img = cv2.ellipse(img,((i[0],i[1]),(i[2],i[3]),float(i[4])*360/PI),color_list[int(i[11])],thickness=3)
+                    #img = cv2.ellipse(img,((i[0],i[1]),(i[2],i[3]),float(i[4])*360/PI),color_list[int(i[11])],thickness=3)
 
                     # 코 
                     img = cv2.circle(img,(int(i[5]),int(i[6])), 5,color_nose, thickness=2)
@@ -84,7 +67,7 @@ def frame_extraction (config, PI = 3.14):
                     # 목 꼬리 선
                     cv2.line(img, (int(i[7]), int(i[8])), (int(i[9]),int(i[10])),color_list[int(i[11])],thickness=2)
                     length2 = round(math.dist([int(i[7]),int(i[8])],[int(i[9]),int(i[10])]),3)
-                    img = cv2.putText(img, str(length1), (int((int(i[7])+int(i[9]))/2),int((int(i[8])+int(i[10]))/2)), cv2.FONT_HERSHEY_PLAIN, 1, color_list[int(i[11])], thickness=2) 
+                    img = cv2.putText(img, str(length2), (int((int(i[7])+int(i[9]))/2),int((int(i[8])+int(i[10]))/2)), cv2.FONT_HERSHEY_PLAIN, 1, color_list[int(i[11])], thickness=2) 
 
                     # 객체 번호
                     img = cv2.putText(img, str(int(i[11])), (int(i[0]),int(i[1])), cv2.FONT_HERSHEY_PLAIN, 2, color_list[int(i[11])], thickness=2)    
@@ -102,16 +85,18 @@ def frame_extraction (config, PI = 3.14):
                     else:
                         move_length = math.dist(object_dict[int(i[11])][0:2], [int(i[9]),int(i[10])])
                         object_dict[int(i[11])][2] += move_length
+                
+                    
 
                     #img = cv2.putText(img, str(move_kcal), (int((int(i[9])+ int(i[10]))/2)), cv2.FONT_HERSHEY_PLAIN, 2, (144,144,144),thickness=2)
 
 
                     
-                    out.write(img)
+                   
                 cv2.imshow(video_path, img)
 
                 
-                cv2.waitKey(2)
+                cv2.waitKey(50)
 
                 frame+=1
             else:
@@ -120,7 +105,6 @@ def frame_extraction (config, PI = 3.14):
     else:
         print("can't open video")
 
-    out.release()
     cap.release()
     cv2.destroyAllWindows()
 
@@ -133,4 +117,4 @@ def frame_extraction (config, PI = 3.14):
 if __name__ == "__main__":
     with open('config.yaml') as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
-    frame_extraction(config)
+    cow_bmr(config)
