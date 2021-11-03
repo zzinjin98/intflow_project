@@ -5,39 +5,41 @@ from Rotate_function import rotate, rotate_box_dot
 import yaml
 import random
 import math
-
-PI = math.pi
-
-
-# def video_out(video_path,video_name):
-
-#     cap = cv2.VideoCapture(video_path) # VideoCapture 객체 정의
-#     fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v') # 코덱 정의
-
-#     width = cap.get(cv2.CAP_PROP_FRAME_WIDTH) # 또는 cap.get(3)
-#     height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT) # 또는 cap.get(4)
-#     fps = cap.get(cv2.CAP_PROP_FPS) # 또는 cap.get(5)
-
-#     out = cv2.VideoWriter(video_name, fourcc, fps, (int(width), int(height))) # VideoWriter 객체 정의
-
-#     print(fps)
-#     return out
+import os
+import math
 
 
+def video_out(video_path,video_name):
 
-def frame_extraction (text_path, video_path):
+    cap = cv2.VideoCapture(video_path) # VideoCapture 객체 정의
+    fourcc = cv2.VideoWriter_fourcc('m', 'p', '4', 'v') # 코덱 정의
 
-    # out = video_out(video_path,"test.mp4")
+    width = cap.get(cv2.CAP_PROP_FRAME_WIDTH) # 또는 cap.get(3)
+    height = cap.get(cv2.CAP_PROP_FRAME_HEIGHT) # 또는 cap.get(4)
+    fps = cap.get(cv2.CAP_PROP_FPS) # 또는 cap.get(5)
+
+    out = cv2.VideoWriter(video_name, fourcc, fps, (int(width), int(height))) # VideoWriter 객체 정의
+
+    
+    return out
+
+
+
+def frame_extraction (config, PI = math.pi):
+    text_path, video_path = config['trk_path'], config['mp4_path']
+
+    out = video_out(video_path,os.path.splitext(os.path.basename(video_path))[0]+'.mp4')
 
     cap = cv2.VideoCapture(video_path)
 
     df = pd.read_csv(text_path, sep=",", header=None)
     frame = 0
     
+
     object_cnt = max(df[12]) + 1
 
     # 최대 개체 수만큼 랜덤으로 컬러를 만듦
-    color_list = [(0,random.randrange(0,256),random.randrange(0,256)) for _ in range(object_cnt)]
+    color_list = [(int(random.random()*i*256) % 25,int(random.random()*i*256) % 256,int(random.random()*i*256) % 256) for i in range(1,object_cnt+1)]
 
     color_nose = (255,255,255)
     color_neck = (255,0,0)
@@ -47,6 +49,7 @@ def frame_extraction (text_path, video_path):
         while True:
             # 프레임을 잘 읽어오면 ret는 True, img 는 프레임 이미지로 저장된다
             ret, img = cap.read()
+            
             if ret:
                 df_frame = df.loc[df[0]==frame,1:].values.tolist()
                 
@@ -55,11 +58,11 @@ def frame_extraction (text_path, video_path):
                     
                     
                     # 몸통 다각형
-                    # points = rotate_box_dot(i[0], i[1], i[2], i[3], i[4])
-                    # img = cv2.polylines(img,[points],True,color_list[int(i[11])],thickness=3)
+                    points = rotate_box_dot(i[0], i[1], i[2], i[3], i[4])
+                    img = cv2.polylines(img,[points],True,color_list[int(i[11])],thickness=3)
 
                     # 몸통 타원 
-                    img = cv2.ellipse(img,((i[0],i[1]),(i[2],i[3]),float(i[4])*360/PI),color_list[int(i[11])],thickness=3)
+                    # img = cv2.ellipse(img,((i[0],i[1]),(i[2],i[3]),float(i[4])*360/PI),color_list[int(i[11])],thickness=3)
 
                     # 코 
                     img = cv2.circle(img,(int(i[5]),int(i[6])), 5,color_nose, thickness=2)
@@ -82,15 +85,12 @@ def frame_extraction (text_path, video_path):
 
                     # 객체 번호
                     img = cv2.putText(img, str(int(i[11])), (int(i[0]),int(i[1])), cv2.FONT_HERSHEY_PLAIN, 2, color_list[int(i[11])], thickness=2)    
-                    
-                    # 여물통
-                    img = cv2.rectangle(img,(config['eat_section'][0],config['eat_section'][1]),(config['eat_section'][2],config['eat_section'][3]),(0,255,0),2)
-                    
-                    # out.write(img)
 
-                cv2.resize(img, dsize=(54, 140), interpolation=cv2.INTER_CUBIC)
+                    out.write(img)
                 cv2.imshow(video_path, img)
-                cv2.waitKey(25)
+
+                
+                cv2.waitKey(2)
 
                 frame+=1
             else:
@@ -99,13 +99,16 @@ def frame_extraction (text_path, video_path):
     else:
         print("can't open video")
 
-    # out.release()
+    out.release()
     cap.release()
     cv2.destroyAllWindows()
+
+
+
 
 
 
 if __name__ == "__main__":
     with open('config.yaml') as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
-    frame_extraction(config['trk_path'],config['mp4_path'])
+    frame_extraction(config)
