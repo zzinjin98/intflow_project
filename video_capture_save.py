@@ -25,7 +25,7 @@ def video_out(video_path,video_name):
 
 
 
-def frame_extraction (config, PI = math.pi):
+def frame_extraction (config):
     text_path, video_path = config['trk_path'], config['mp4_path']
 
     out = video_out(video_path,os.path.splitext(os.path.basename(video_path))[0]+'.mp4')
@@ -62,7 +62,7 @@ def frame_extraction (config, PI = math.pi):
                     img = cv2.polylines(img,[points],True,color_list[int(i[11])],thickness=3)
 
                     # 몸통 타원 
-                    # img = cv2.ellipse(img,((i[0],i[1]),(i[2],i[3]),float(i[4])*360/PI),color_list[int(i[11])],thickness=3)
+                    # img = cv2.ellipse(img,((i[0],i[1]),(i[2],i[3]),float(i[4])*360/math.pi),color_list[int(i[11])],thickness=3)
 
                     # 코 
                     img = cv2.circle(img,(int(i[5]),int(i[6])), 5,color_nose, thickness=2)

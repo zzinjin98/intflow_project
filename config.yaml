@@ -2,6 +2,10 @@ det_path: "../mounting_001/mounting_001_det.txt"
 mp4_path: "../mounting_001/mounting_001.mp4"
 trk_path: "../mounting_001/mounting_001_trk.txt"
 
+# 01_20210908170650302_det.txt
+# 01_20210908170650302.mp4
+# 01_20210908170650302_trk.txt
+
 drink_iou : 0.05
 eat_iou : 0.05
 L_per_frame: 0.01
