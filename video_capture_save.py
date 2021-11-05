@@ -6,7 +6,6 @@ import yaml
 import random
 import math
 import os
-import math
 
 
 def video_out(video_path,video_name):

@@ -1,12 +1,16 @@
-det_path: "../mounting_001/mounting_001_det.txt"
-mp4_path: "../mounting_001/mounting_001.mp4"
-trk_path: "../mounting_001/mounting_001_trk.txt"
+det_path: "../mounting_023/mounting_023_det.txt"
+mp4_path: "../mounting_023/mounting_023.mp4"
+trk_path: "../mounting_023/mounting_023_trk.txt"
 
 # 01_20210908170650302_det.txt
 # 01_20210908170650302.mp4
 # 01_20210908170650302_trk.txt
 
-drink_iou : 0.05
-eat_iou : 0.05
+# det_path: "../h264_01_20211001162059677_1/h264_01_20211001162059677_1_det.txt"
+# mp4_path: "../h264_01_20211001162059677_1/h264_01_20211001162059677_1.mp4"
+# trk_path: "../h264_01_20211001162059677_1/h264_01_20211001162059677_1_trk.txt"
+
+drink_iou : 0.0005
+eat_iou : 0.0005
 L_per_frame: 0.01
 gram_per_frame: 0.1
