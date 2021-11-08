@@ -9,35 +9,52 @@ import os
 
 
 
-
 def kcal_cal (config):
     text_path, video_path = config['trk_path'], config['mp4_path']
 
-   
     cap = cv2.VideoCapture(video_path)
-
     df = pd.read_csv(text_path, sep=",", header=None)
-
     frame = 0
-
     object_cnt = max(df[12]) + 1
 
-    # 돼지 수만큼의 딕셔너리 값 생성
 
-    object_dict = {i:[0,0,0,0] for i in range(object_cnt)}
+    kg_per_squaremeter = config['kg_per_squaremeter']
+    move_length_to_kcal = config['move_length_to_kcal']
+    m_per_pixel = config['m_per_pixel']
+
+    # 돼지 수만큼의 딕셔너리 값 생성  1:소 번호 , 2:x좌표 , 3:y좌표 , 4:활동량 칼로리 누적 , 5:기초대사량 칼로리 누적 
+    object_dict = {i:[0,0,0,0,0] for i in range(object_cnt)}
 
 
     # 최대 개체 수만큼 랜덤으로 컬러를 만듦
     color_list = [(int(random.random()*i*256) % 25,int(random.random()*i*256) % 256,int(random.random()*i*256) % 256) for i in range(1,object_cnt+1)]
 
+    # 눈,목,꼬리 컬러
     color_nose = (255,255,255)
     color_neck = (255,0,0)
     color_tail = (255,255,0)
 
 
-    width_dict = {i:[] for i in range(object_cnt)}
-    height_dict = {i:[] for i in range(object_cnt)}
+    # 각 객체별 높이, 너비 딕셔너리
+    width_dict = {i:df.loc[df[12]==i, 3].tolist() for i in range(object_cnt)}
+    height_dict = {i:df.loc[df[12]==i, 4].tolist() for i in range(object_cnt)}
 
+
+    pd_width = pd.DataFrame.from_dict(width_dict, orient='index')
+    pd_height = pd.DataFrame.from_dict(height_dict, orient='index')
+    pd_width_res = pd_width.transpose()
+    pd_height_res = pd_height.transpose()
+    width_Q1 = []
+    height_Q3 = []
+
+
+    for i in range(object_cnt):
+        Q1 = pd_width_res[i].quantile(q = 0.25, interpolation='nearest')
+        Q3 = pd_height_res[i].quantile(q = 0.75, interpolation='nearest')
+        width_Q1.append(float(Q1)*m_per_pixel)
+        height_Q3.append(float(Q3)*m_per_pixel)
+
+    
 
     if cap.isOpened():
         while True:
@@ -80,10 +97,7 @@ def kcal_cal (config):
                     # 객체 번호
                     img = cv2.putText(img, str(int(i[11])), (int(i[0]),int(i[1])), cv2.FONT_HERSHEY_PLAIN, 2, color_list[int(i[11])], thickness=2)    
 
-                    # kcal 환산
-                    # 다음 프레임의 좌표와의 거리 구하기
-                    # 왜 거리좌표가 같음(움직임 0)에도 값이 저렇게 크게 나오는가??
-                    # move_kcal 에는 각돼지의 움직임이 합산되어 버림-> 돼지마다의 움직임을 각자 계산되어야한다.
+
                     
                     if frame == 0:
                         object_dict[int(i[11])][0] = int(i[1])
@@ -94,14 +108,19 @@ def kcal_cal (config):
                         move_length = math.dist(object_dict[int(i[11])][0:2], [int(i[1]),int(i[2])])
                         object_dict[int(i[11])][2] += move_length
 
-                    object_dict[int(i[11])][3] += object_dict[int(i[11])][2] * 0.00004437 # 실시간 이동량 * 환산계수
-                
-                for i in range(object_cnt):
-                    img = cv2.putText(img,f'No.{i} kcal : {round(object_dict[i][3],2)}',(1000, 40*(i+1)), cv2.FONT_HERSHEY_PLAIN, 2, (255,255,255), thickness=2)    
+                    object_dict[int(i[11])][3] += object_dict[int(i[11])][2] * move_length_to_kcal # 실시간 이동량 * 환산계수
                     
-                cv2.imshow(video_path, img)
+                    cow_surface = math.pi * float(width_Q1[int(i[11])]) * ((float(width_Q1[int(i[11])]) /2) + (float(height_Q3[int(i[11])])))
+                    cow_bmr = float(cow_surface) * kg_per_squaremeter / (24*60*60*30)
+                    object_dict[int(i[11])][4] += cow_bmr
 
-                
+
+                for i in range(object_cnt):
+                    img = cv2.putText(img,f'No.{i} move_kcal: {round(object_dict[i][3],3)}',(1000, 40*(i+1)), cv2.FONT_HERSHEY_PLAIN, 2, (255,255,255), thickness=2)    
+                    img = cv2.putText(img,f'No.{i} bmr_kcal: {round(object_dict[i][4],3)}',(1000, 40*(object_cnt+i+1)), cv2.FONT_HERSHEY_PLAIN, 2, (255,255,255), thickness=2)    
+
+        
+                cv2.imshow(video_path, img)
                 cv2.waitKey(50)
 
                 frame+=1
@@ -116,7 +135,9 @@ def kcal_cal (config):
 
 
     for i in object_dict.keys():
-        print(f'{i}번 칼로리 : {round(object_dict[i][3])}')
+        # etc_kcal == bmr_kcal / 4
+        etc_kcal = object_dict[i][4] / 4
+        print(f'{i}번 move 칼로리 : {round(object_dict[i][3],3)} , bmr 칼로리 : {round(object_dict[i][4],3)} , 총 칼로리 : {round(object_dict[i][3] + object_dict[i][4] + etc_kcal,3)}')
 
 
 

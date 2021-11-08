@@ -1,7 +1,10 @@
 det_path: "mounting_001/mounting_001_det.txt"
 mp4_path: "mounting_001/mounting_001.mp4"
 trk_path: "mounting_001/mounting_001_trk.txt"
-drink_iou : 0.05
-eat_iou : 0.05
+drink_iou : 0.0005
+eat_iou : 0.0005
 L_per_frame: 0.01
 gram_per_frame: 0.1
+kg_per_squaremeter: 1100
+move_length_to_kcal: 0.00004437
+m_per_pixel: 0.005
