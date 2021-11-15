@@ -105,4 +105,4 @@ def frame_extraction (text_path, video_path):
 if __name__ == "__main__":
     with open('config.yaml') as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
-    frame_extraction(config['det_path'],config['mp4_path'])
+    frame_extraction(config['trk_path'],config['mp4_path'])

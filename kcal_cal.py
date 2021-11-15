@@ -10,16 +10,19 @@ import os
 
 
 
-def cow_bmr (config):
+def kcal_cal (config):
     text_path, video_path = config['trk_path'], config['mp4_path']
 
    
     cap = cv2.VideoCapture(video_path)
 
     df = pd.read_csv(text_path, sep=",", header=None)
+
     frame = 0
 
     object_cnt = max(df[12]) + 1
+
+    # 돼지 수만큼의 딕셔너리 밸루 생성
 
     object_dict = {i:[0,0,0] for i in range(object_cnt)}
 
@@ -78,17 +81,19 @@ def cow_bmr (config):
                     # move_kcal 에는 각돼지의 움직임이 합산되어 버림-> 돼지마다의 움직임을 각자 계산되어야한다.
                     
                     if frame == 0:
-                        object_dict[int(i[11])][0] = int(i[9])
-                        object_dict[int(i[11])][1] = int(i[10])
+                        object_dict[int(i[11])][0] = int(i[1])
+                        object_dict[int(i[11])][1] = int(i[2])
 
                     
                     else:
-                        move_length = math.dist(object_dict[int(i[11])][0:2], [int(i[9]),int(i[10])])
+                        move_length = math.dist(object_dict[int(i[11])][0:2], [int(i[1]),int(i[2])])
                         object_dict[int(i[11])][2] += move_length
-                
-                    
 
-                    #img = cv2.putText(img, str(move_kcal), (int((int(i[9])+ int(i[10]))/2)), cv2.FONT_HERSHEY_PLAIN, 2, (144,144,144),thickness=2)
+                    move_kcal = object_dict[int(i[11])][2] * 0.00004437 # 실시간 이동량 * 환산계수
+                
+                    img = cv2.putText(img,str(move_kcal), (int(i[0]),int(i[1])), cv2.FONT_HERSHEY_PLAIN, 2, color_list[int(i[11])], thickness=2)    
+
+                    
 
 
                     
@@ -114,7 +119,8 @@ def cow_bmr (config):
         print(f'{i}번 이동 량 : {round(object_dict[i][2])}')
 
 
+
 if __name__ == "__main__":
     with open('config.yaml') as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
-    cow_bmr(config)
+    kcal_cal(config)
