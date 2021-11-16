@@ -12,7 +12,7 @@ class draw_polygon :
     # 클래스 생성 시  
     def __init__(self,config):
 
-        # 리스트 형으로 drink_section과 eat_section 초기화
+        # 리스트 형으로 drink_section과 eat_section 초기화'
         self.drink_section = []
         self.eat_section = []
 
