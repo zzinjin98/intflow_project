@@ -1,6 +1,6 @@
-det_path: "mounting_001/mounting_001_det.txt"
-mp4_path: "mounting_001/mounting_001.mp4"
-trk_path: "mounting_001/mounting_001_trk.txt"
+det_path: "mounting_023/mounting_023_det.txt"
+mp4_path: "mounting_023/mounting_023.mp4"
+trk_path: "mounting_023/mounting_023_trk.txt"
 drink_iou : 0.0005
 eat_iou : 0.0005
 L_per_frame: 0.01

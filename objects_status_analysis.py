@@ -60,7 +60,7 @@ class draw_polygon :
 
 
 
-def cnt_drink_eat(config):
+def objects_status_analysis(config):
 
     # drink section과 eat section 선택
     polygon_draw = draw_polygon(config)
@@ -302,5 +302,5 @@ def video_out(video_path,video_name):
 if __name__ == "__main__":
     with open('config.yaml') as file:
         config = yaml.load(file, Loader=yaml.FullLoader)
-    cnt_drink_eat(config)
+    objects_status_analysis(config)
     
