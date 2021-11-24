@@ -24,13 +24,13 @@ info["version"] = "0.1.0"
 info["description"] = "Dataset in COCO Format"
 info["contributor"] = ""
 info["url"] = ""
-info["date_created"] = "2021-11-18"
+info["date_created"] = "2021-11"
 
-licenses["id"] = "1"
+licenses["id"] = 1
 licenses["url"] = ""
 licenses["name"] = "ALL RIGHTS RESERVED"
 
-categories["id"] = "1"
+categories["id"] = 1
 categories["name"] = "cow"
 categories["supercategory"] = "none"
 
@@ -50,7 +50,18 @@ categories
 print(json.dumps(coco_group, ensure_ascii=False, indent="\t"))
 
 
+def circumscription (points):
+    x_min = min(points[:,0])
+    x_max = max(points[:,0])
+    y_min = min(points[:,1])
+    y_max = max(points[:,1])
 
+    print(points[:,0])
+    print(points[:,1])
+
+    w = x_max - x_min
+    h = y_max - y_min
+    return float(w),float(h)
 
 def frame_extraction (config, PI = 3.14):
     text_path, video_path = config['trk_path'], config['mp4_path']
@@ -60,12 +71,12 @@ def frame_extraction (config, PI = 3.14):
     df = pd.read_csv(text_path, sep=",", header=None)
     frame = 0
 
-    
+    img_cnt = 1
     object_cnt = max(df[12]) + 1
 
     img_list = []
     ann_list = []
-    ann_id = 0
+    ann_id = 1
     if cap.isOpened():
         while True:
             # 프레임을 잘 읽어오면 ret는 True, img 는 프레임 이미지로 저장된다
@@ -79,28 +90,39 @@ def frame_extraction (config, PI = 3.14):
                 image['height'] = h
                 image['width'] = w
                 image['license'] = 1
-                image['id'] = frame
-                image['filename'] = f'{frame}.jpg'
-                # for i in range(len(df_frame)):
+                image['id'] = img_cnt
+                image['filename'] = f'{img_cnt}.jpg'
                     
                 img_list.append(image)
+                
+                if frame % 50 == 0 :
+                    for d in df_frame:
+                        points = rotate_box_dot(d[0], d[1], d[2], d[3], d[4])
+                        bbox_w,bbox_h =circumscription(points)
+
+                        ann = {}
+                        ann['id'] = ann_id
+                        ann['iscrowd'] = 0
+                        ann['bbox'] = d[:2]+[w,h]
+                        ann['image_id'] = img_cnt
+                        ann['category_id'] =1
+                        ann['area'] = bbox_w*bbox_h
+
+                        ann_id += 1
+
+                        ann_list.append(ann)
+                    #     cv2.rectangle(img, (int(d[0]-bbox_w/2),int(d[1]-bbox_h/2)),(int(d[0]+bbox_w/2),int(d[1]+bbox_h/2)),thickness=3,color=(255,255,255))
+                    # cv2.imshow(video_path, img)
+
+                    # cv2.waitKey(1000)
+                        
+                
+
+                    cv2.imwrite(f'images/{img_cnt}.jpg',img)
+
+                    img_cnt += 1
+
                     
-                for d in df_frame:
-                    ann = {}
-                    ann['id'] = ann_id
-                    ann['iscrowd'] = 0
-                    ann['bbox'] = d[:4]
-                    ann['image_id'] = frame
-                    ann['category_id'] = 1
-                    ann_id += 1
-
-                    ann_list.append(ann)
-                
-                cv2.imwrite(f'images/{frame}.jpg',img)
-
-                
-
-
                 cv2.imshow(video_path, img)
                 cv2.waitKey(2)
 
@@ -117,10 +139,8 @@ def frame_extraction (config, PI = 3.14):
 
     coco_group['images'] = img_list
     coco_group['annotations'] = ann_list
-    # cocodict['annotations'] = image_list
 
-    # print(cocodict)
-    print(coco_group)
+    
     with open ('test.json','w',encoding='utf-8') as make_file:
         json.dump(coco_group, make_file,indent='\t')
 

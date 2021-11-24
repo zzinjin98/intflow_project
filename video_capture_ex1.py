@@ -58,6 +58,8 @@ def frame_extraction (config, PI = 3.14):
                     
                     # 몸통 다각형
                     points = rotate_box_dot(i[0], i[1], i[2], i[3], i[4])
+
+
                     img = cv2.polylines(img,[points],True,color_list[int(i[11])],thickness=3)
 
                     # 몸통 타원 
