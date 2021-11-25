@@ -111,10 +111,12 @@ def frame_extraction (config, PI = 3.14):
                         ann_id += 1
 
                         ann_list.append(ann)
-                    #     cv2.rectangle(img, (int(d[0]-bbox_w/2),int(d[1]-bbox_h/2)),(int(d[0]+bbox_w/2),int(d[1]+bbox_h/2)),thickness=3,color=(255,255,255))
-                    # cv2.imshow(video_path, img)
+                        cv2.rectangle(img, (int(d[0]-bbox_w/2),int(d[1]-bbox_h/2)),(int(d[0]+bbox_w/2),int(d[1]+bbox_h/2)),thickness=3,color=(255,255,255))
+                        img = cv2.polylines(img,[points],True,(255,0,0),thickness=2)
 
-                    # cv2.waitKey(1000)
+                    cv2.imshow(video_path, img)
+
+                    cv2.waitKey(1000)
                         
                 
 
