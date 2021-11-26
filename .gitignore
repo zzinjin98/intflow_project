@@ -14,3 +14,7 @@ images_train
 train.json
 test.json
 /images_train
+/test_data
+/test_img
+/train_data
+/train_img

@@ -1,6 +1,8 @@
 det_path: "h264_01_20211001162059677_1/h264_01_20211001162059677_1_det.txt"
 mp4_path: "h264_01_20211001162059677_1/h264_01_20211001162059677_1.mp4"
 trk_path: "h264_01_20211001162059677_1/h264_01_20211001162059677_1_trk.txt"
+train_path: "train_data"
+test_path: "test_data"
 drink_iou : 0.0005
 eat_iou : 0.0005
 L_per_frame: 0.01
