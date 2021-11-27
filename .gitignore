@@ -2,9 +2,28 @@
 /mounting_001
 /__pycache__
 /mounting_023
+<<<<<<< HEAD
 test.mp4
 /onehour_txt
 .gitignore
 KakaoTalk_20211108_145720689.mp4
 mounting_001.mp4
 mounting_023.mp4
+=======
+/01_202109081705528_2
+/h264_01_20211001162059677_1
+h264_01_20211001162059677_1trk.mp4
+mounting_001trk.mp4
+mounting_023trk.mp4
+/images
+mounting_001.mp4
+/images
+images_train
+train.json
+test.json
+/images_train
+/test_data
+/test_img
+/train_data
+/train_img
+>>>>>>> 6d5eb04efd236b89dbf77f14e558239dfc9f967b
